@@ -1,3 +1,3 @@
-### tmcolors
+### tmformat
 
-Some useful tools to format usernames, map names, etc in Trackmania games.
+Tools to help with formatting text in Trackmania games.
