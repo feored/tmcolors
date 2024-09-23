@@ -1,12 +1,15 @@
 <script lang="ts">
 	import { tm_to_html } from '$lib/format';
+	import '$lib/style.css';
 	import type { TextDetails } from '$lib/format';
-	let bg_color = $state('grey');
+	let bg_color = $state('#808080');
 	let { tm_text = '' }: { tm_text: string } = $props();
+
+	$inspect(bg_color);
 </script>
 
-<main>
-	<div id="result" style:backgroundColor={bg_color}>
+<section>
+	<div id="result" style:background-color={bg_color}>
 		{#each tm_to_html(tm_text) as block}
 			<span
 				style:color={block.style.color}
@@ -19,33 +22,27 @@
 			</span>
 		{/each}
 	</div>
-	<input type="color" bind:value={bg_color} />
-</main>
+	<label for="bgcolor"><small>Background Color</small></label>
+	<input id="bgcolor" type="color" bind:value={bg_color} />
+</section>
 
 <style>
 	#result {
-		background-color: grey;
-		padding: 10px;
+		padding: 0.5rem;
+		display: flex;
+		align-items: center;
+		min-height: 4rem;
+		border-radius: 6px;
 	}
+
+	#bgcolor {
+		margin-top: 1rem;
+		width: 3rem;
+		height: 3rem;
+	}
+
 	#result span {
 		font-family: 'Roboto Flex';
 		font-size: x-large;
-	}
-	.wide {
-		font-variation-settings:
-			'wdth' 151,
-			'XTRA' 500;
-	}
-
-	.normal {
-		font-variation-settings:
-			'wdth' 100,
-			'XTRA' 468;
-	}
-
-	.narrow {
-		font-variation-settings:
-			'wdth' 25,
-			'XTRA' 400;
 	}
 </style>

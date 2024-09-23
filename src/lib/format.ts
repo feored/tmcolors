@@ -37,6 +37,40 @@ const MODIFIER_SYMBOL = "$"
 const VALID_MODIFIERS = ["i", "o", "s", "w", "n", "g", "m", "z", "$"]
 const HEXADECIMAL = "0123456789ABCDEF"
 
+function hex_to_rgb(hex: string) {
+    if (hex[0] == "#") {
+        hex = hex.slice(1);
+    }
+    var bigint = parseInt(hex, 16);
+    var r = (bigint >> 16) & 255;
+    var g = (bigint >> 8) & 255;
+    var b = bigint & 255;
+
+    return [r, g, b];
+}
+
+function rgb_to_hex(r: number, g: number, b: number) {
+    return "#" + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1);
+}
+
+function rgb_to_hex_3(r: number, g: number, b: number) {
+    return "#" + [r, g, b].map((x) => Math.round(x / 17).toString(16)).join('');
+}
+
+export function hex_6_to_3(hex: string): string {
+    let rgb = hex_to_rgb(hex);
+    return rgb_to_hex_3(rgb[0], rgb[1], rgb[2]);
+}
+
+export function closest_color(hex: string): string {
+    let rgb = hex_to_rgb(hex);
+    console.log(rgb);
+    for (let i = 0; i < 3; i++) {
+        rgb[i] = (Math.round(rgb[i] / 17) * 17);
+    }
+    console.log(rgb);
+    return rgb_to_hex(rgb[0], rgb[1], rgb[2]);
+}
 
 
 function modifier_to_token(modifier: string): Token {
