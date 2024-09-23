@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { tm_to_html } from '$lib/format';
 	import type { TextDetails } from '$lib/format';
-
+	let bg_color = $state('grey');
 	let { tm_text = '' }: { tm_text: string } = $props();
 </script>
 
 <main>
-	<div id="result">
+	<div id="result" style:backgroundColor={bg_color}>
 		{#each tm_to_html(tm_text) as block}
 			<span
 				style:color={block.style.color}
@@ -19,6 +19,7 @@
 			</span>
 		{/each}
 	</div>
+	<input type="color" bind:value={bg_color} />
 </main>
 
 <style>
@@ -32,46 +33,19 @@
 	}
 	.wide {
 		font-variation-settings:
-			'slnt' 0,
 			'wdth' 151,
-			'GRAD' 0,
-			'XOPQ' 96,
-			'XTRA' 468,
-			'YOPQ' 79,
-			'YTAS' 750,
-			'YTDE' -203,
-			'YTFI' 738,
-			'YTLC' 514,
-			'YTUC' 712;
+			'XTRA' 500;
 	}
 
 	.normal {
 		font-variation-settings:
-			'slnt' 0,
 			'wdth' 100,
-			'GRAD' 0,
-			'XOPQ' 96,
-			'XTRA' 468,
-			'YOPQ' 79,
-			'YTAS' 750,
-			'YTDE' -203,
-			'YTFI' 738,
-			'YTLC' 514,
-			'YTUC' 712;
+			'XTRA' 468;
 	}
 
 	.narrow {
 		font-variation-settings:
-			'slnt' 0,
 			'wdth' 25,
-			'GRAD' 0,
-			'XOPQ' 96,
-			'XTRA' 468,
-			'YOPQ' 79,
-			'YTAS' 750,
-			'YTDE' -203,
-			'YTFI' 738,
-			'YTLC' 514,
-			'YTUC' 712;
+			'XTRA' 400;
 	}
 </style>
