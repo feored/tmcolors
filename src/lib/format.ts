@@ -7,6 +7,7 @@ enum Token {
     Shadow,
     Color,
     Invalid,
+    Dollar,
     ColorReset,
     WidthReset,
     FullReset,
@@ -97,18 +98,25 @@ function modifier_to_token(modifier: string): Token {
 }
 
 function tokenize_next(input: string): TokenData {
+    console.log("Tokenizing " + input)
     if (input[0] != MODIFIER_SYMBOL) {
+        console.log("Returning character")
         return { type: Token.Character, value: input[0] }
     }
-    if (input.length == 1) {
-        return { type: Token.Character, value: "" }
+    else {
+        if (input.length == 1) {
+            console.log("Length 1, returning invalid");
+            return { type: Token.Invalid, value: input[0] }
+        }
+        if (input[1] == MODIFIER_SYMBOL) {
+            console.log("Spot 1 is $, returning character");
+            return { type: Token.Dollar, value: MODIFIER_SYMBOL }
+        }
     }
     if (input.length >= 4 && input.slice(1, 4).split("").every((char) => HEXADECIMAL.includes(char.toUpperCase()))) {
         return { type: Token.Color, value: input.slice(1, 4) }
     }
-    if (input[1] == MODIFIER_SYMBOL) {
-        return { type: Token.Character, value: MODIFIER_SYMBOL }
-    }
+
     if (VALID_MODIFIERS.includes(input[1])) {
         return { type: modifier_to_token(input[1]), value: "" }
     }
@@ -138,6 +146,7 @@ function tokenize(input: string): TokenData[] {
 
 export function tm_to_html(input: string): { style: TextDetails, text: string }[] {
     let tokens = tokenize(input);
+    console.log(tokens);
     let output: { style: TextDetails, text: string }[] = [];
     let current_text_details = { ...DEFAULT_TEXT_DETAILS };
 
@@ -147,7 +156,7 @@ export function tm_to_html(input: string): { style: TextDetails, text: string }[
 
     for (const token of tokens) {
 
-        if (token.type == Token.Character || token.type == Token.Invalid) {
+        if (token.type == Token.Character || token.type == Token.Invalid || token.type == Token.Dollar) {
             if (output.length == 0 || !is_same_style(output[output.length - 1].style, current_text_details)) {
                 output.push({ style: { ...current_text_details }, text: token.value });
             } else {
