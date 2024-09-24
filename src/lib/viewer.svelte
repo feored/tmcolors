@@ -2,7 +2,7 @@
 	import { tm_to_html } from '$lib/format';
 	import '$lib/style.css';
 	import type { TMStyle } from '$lib/format';
-	let bg_color = $state('#808080');
+	let bg_color = $state('#000000');
 	let { tm_text = '' }: { tm_text: string } = $props();
 </script>
 
@@ -32,9 +32,12 @@
 	#result {
 		padding: 1rem;
 		border-radius: 6px;
+		white-space: pre-line;
+		overflow-x: auto;
 	}
 	#result span {
 		font-family: 'Roboto Flex';
 		font-size: x-large;
+		white-space: pre;
 	}
 </style>

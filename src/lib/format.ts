@@ -111,7 +111,7 @@ function is_color_token(input: string): { is_color: boolean, color_value: string
     let color_length = 0;
 
     for (let i = 0; i < 3; i++) {
-        if (!HEXADECIMAL.includes(modifierless_input[i].toUpperCase())) {
+        if (modifierless_input.length < i + 1 || !HEXADECIMAL.includes(modifierless_input[i].toUpperCase())) {
             break
         }
         color_length++;
@@ -124,7 +124,7 @@ function is_color_token(input: string): { is_color: boolean, color_value: string
     for (let i = 0; i < color_length; i++) {
         final_color += modifierless_input[i];
     }
-    final_color.padEnd(3, "0");
+    final_color = final_color.padEnd(3, "0");
     return { is_color: true, color_value: final_color, skip: color_length }
 }
 

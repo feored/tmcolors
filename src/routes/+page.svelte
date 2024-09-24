@@ -4,8 +4,10 @@
 	import { formatting_data, formatting_unsupported } from '$lib/format_help';
 	import { closest_color, hex_6_to_3 } from '$lib/format';
 	import { RotateCcw, RotateCw } from 'lucide-svelte';
+	import { version } from '$app/environment';
 
-	const STARTING_TEXT = '$t Example: $t$i Italic $o Bold $f00 Red $w Wide $z Reset'; //$i$fff/$beeo$CFDnz$fff/$CFCf$CFDe$BEDo$BEEr';
+	const STARTING_TEXT = '$t Example: $t$i Italic $o Bold $f00 Red $w Wide $z Reset $0d0 [tmformat]';
+
 	let tm_text = $state(STARTING_TEXT);
 	let tm_editor: HTMLTextAreaElement | null = $state(null);
 	let tm_text_color = $state('#ffffff');
@@ -14,6 +16,12 @@
 	let history: string[] = $state([STARTING_TEXT]);
 	let history_index: number = $state(0);
 
+	let diacritics = [];
+	for (let i = 768; i <= 879; i++) {
+		diacritics.push(String.fromCodePoint(i));
+	}
+	let selected_diacritic = $state(diacritics[0]);
+
 	function add_modifier(modifier: string) {
 		if (!tm_editor) return;
 		tm_text =
@@ -21,7 +29,6 @@
 			modifier +
 			tm_text.substring(tm_editor.selectionStart);
 		history_add();
-		// tm_editor.focus();
 	}
 	function sanitize_color() {
 		tm_text_color = closest_color(tm_text_color);
@@ -76,9 +83,10 @@
 
 <main>
 	<h3>Trackmania Formatting Tool</h3>
-	<p>
-		<small>This tool was tested on TM². Details may vary in other versions of Trackmania.</small>
-	</p>
+	<div style="text-align:right;">
+		<h6>v{version}</h6>
+	</div>
+
 	<dialog open={format_info_open || null}>
 		<header>
 			<h4>Formatting Guide</h4>
@@ -98,6 +106,9 @@
 	</dialog>
 	<section>
 		<button onclick={() => (format_info_open = true)} class="success">Formatting Guide</button>
+		<p style="font-size:small;">
+			[Tested in TM², details may vary in other versions of Trackmania.]
+		</p>
 	</section>
 	<details open>
 		<summary>Width Modifiers</summary>
@@ -130,8 +141,19 @@
 		<button onclick={() => add_modifier('$t')}>UPPERCASE</button>
 		<button onclick={() => add_modifier('$z')} class="default">Reset All Styles</button>
 	</details>
-	<details open>
+	<details>
 		<summary> Characters</summary>
+		<div class="flex" style="gap:1rem;">
+			<button onclick={() => add_modifier('$$')}>$</button>
+			<div class="inline block">
+				<select bind:value={selected_diacritic} class="inline" style="width:fit-content;">
+					{#each diacritics as diacritic}
+						<option value={diacritic}>{diacritic}</option>
+					{/each}
+				</select>
+				<button onclick={() => add_modifier(selected_diacritic)}>Insert Diacritic</button>
+			</div>
+		</div>
 	</details>
 	<span class="flex">
 		<button disabled={!undoable()} onclick={() => undo()}><RotateCcw /></button>
