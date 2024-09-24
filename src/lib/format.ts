@@ -16,7 +16,8 @@ enum Token {
 
 type TokenData = {
     type: Token
-    value: string
+    value: string,
+    skip: number
 }
 
 export type TMStyle = {
@@ -100,27 +101,55 @@ function modifier_to_token(modifier: string): Token {
     }
 }
 
+function is_color_token(input: string): { is_color: boolean, color_value: string, skip: number } {
+    // is a color: $ followed by 1-3 hexadecimal characters
+    // e.g $f = #f00, $ff = #ff0, $fff = #fff
+    if (input[0] != MODIFIER_SYMBOL || input.length < 2) {
+        return { is_color: false, color_value: "", skip: 0 }
+    }
+    let modifierless_input = input.slice(1);
+    let color_length = 0;
+
+    for (let i = 0; i < 3; i++) {
+        if (!HEXADECIMAL.includes(modifierless_input[i].toUpperCase())) {
+            break
+        }
+        color_length++;
+    }
+    if (color_length == 0) {
+        return { is_color: false, color_value: "", skip: 0 }
+    }
+
+    let final_color = "";
+    for (let i = 0; i < color_length; i++) {
+        final_color += modifierless_input[i];
+    }
+    final_color.padEnd(3, "0");
+    return { is_color: true, color_value: final_color, skip: color_length }
+}
+
 function tokenize_next(input: string): TokenData {
     if (input[0] != MODIFIER_SYMBOL) {
-        return { type: Token.Character, value: input[0] }
+        return { type: Token.Character, value: input[0], skip: 0 }
     }
     else {
         if (input.length == 1) {
-            return { type: Token.Invalid, value: input[0] }
+            return { type: Token.Invalid, value: input[0], skip: 0 }
         }
         if (input[1] == MODIFIER_SYMBOL) {
-            return { type: Token.Dollar, value: MODIFIER_SYMBOL }
+            return { type: Token.Dollar, value: MODIFIER_SYMBOL, skip: 1 }
         }
     }
-    if (input.length >= 4 && input.slice(1, 4).split("").every((char) => HEXADECIMAL.includes(char.toUpperCase()))) {
-        return { type: Token.Color, value: input.slice(1, 4) }
+    let { is_color, color_value, skip } = is_color_token(input);
+    if (is_color) {
+        return { type: Token.Color, value: color_value, skip: skip }
     }
 
     if (BASIC_MODIFIERS.includes(input[1])) {
-        return { type: modifier_to_token(input[1]), value: "" }
+        return { type: modifier_to_token(input[1]), value: "", skip: 1 }
     }
 
-    return { type: Token.Invalid, value: input[1] }
+    return { type: Token.Invalid, value: input[1], skip: 1 }
 }
 
 function tokenize(input: string): TokenData[] {
@@ -128,16 +157,8 @@ function tokenize(input: string): TokenData[] {
     for (let i = 0; i < input.length; i++) {
         let token = tokenize_next(input.slice(i));
         output.push(token);
-        switch (token.type) {
-            case Token.Character:
-                break;
-            case Token.Color:
-                i += 3;
-                break;
-            default:
-                i += 1;
-                break
-        }
+        i += token.skip;
+
     }
     return output;
 }
@@ -154,7 +175,7 @@ export function tm_to_html(input: string): { style: TMStyle, text: string }[] {
 
     for (const token of tokens) {
 
-        if (token.type == Token.Character || token.type == Token.Invalid || token.type == Token.Dollar) {
+        if (token.type == Token.Character || token.type == Token.Dollar) {
             if (output.length == 0 || !is_same_style(output[output.length - 1].style, current_text_details)) {
                 output.push({ style: { ...current_text_details }, text: token.value });
             } else {
