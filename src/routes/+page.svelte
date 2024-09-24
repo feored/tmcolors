@@ -1,10 +1,8 @@
 <script lang="ts">
-	import '$lib/style.css';
 	import Viewer from '$lib/viewer.svelte';
-	import { formatting_data, formatting_unsupported } from '$lib/format_help';
+	import Gradient from '$lib/gradient.svelte';
 	import { closest_color, hex_6_to_3 } from '$lib/format';
 	import { RotateCcw, RotateCw } from 'lucide-svelte';
-	import { version } from '$app/environment';
 
 	const STARTING_TEXT = '$t Example: $t$i Italic $o Bold $f00 Red $w Wide $z Reset $0d0 [tmformat]';
 
@@ -12,7 +10,6 @@
 	let tm_editor: HTMLTextAreaElement | null = $state(null);
 	let tm_text_color = $state('#ffffff');
 
-	let format_info_open = $state(false);
 	let history: string[] = $state([STARTING_TEXT]);
 	let history_index: number = $state(0);
 
@@ -70,46 +67,7 @@
 	}
 </script>
 
-{#snippet format_guide(format_list: { name: string; code: string; description: string }[])}
-	{#each format_list as format_info}
-		<article>
-			<header class="flex" style="gap:1rem">
-				<span>{format_info.name}</span><code>[{format_info.code}]</code>
-			</header>
-			<small>{@html format_info.description}<small> </small></small>
-		</article>
-	{/each}
-{/snippet}
-
 <main>
-	<h3>Trackmania Formatting Tool</h3>
-	<div style="text-align:right;">
-		<h6>v{version}</h6>
-	</div>
-
-	<dialog open={format_info_open || null}>
-		<header>
-			<h4>Formatting Guide</h4>
-		</header>
-		<div class="content">
-			<p>To format your text, you can use the following modifiers:</p>
-			{@render format_guide(formatting_data)}
-			<p>
-				The game also recognizes the following modifiers for links, but they are not supported by
-				this tool for the sake of simplicity.
-			</p>
-			{@render format_guide(formatting_unsupported)}
-		</div>
-		<footer>
-			<button onclick={() => (format_info_open = false)}>Close</button>
-		</footer>
-	</dialog>
-	<section>
-		<button onclick={() => (format_info_open = true)} class="success">Formatting Guide</button>
-		<p style="font-size:small;">
-			[Tested in TM², details may vary in other versions of Trackmania.]
-		</p>
-	</section>
 	<details open>
 		<summary>Width Modifiers</summary>
 		<button onclick={() => add_modifier('$w')}><span class="roboto wide">Wide</span></button>
@@ -163,15 +121,13 @@
 	<textarea oninput={() => history_add()} bind:this={tm_editor} bind:value={tm_text}></textarea>
 	<br />
 	<Viewer {tm_text} />
+	<hr />
+	<h4>Gradient Maker</h4>
+	<Gradient />
 </main>
 
 <style>
 	textarea {
 		font-family: monospace;
-	}
-
-	dialog .content {
-		max-height: 50vh;
-		overflow-y: auto;
 	}
 </style>
