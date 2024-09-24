@@ -25,7 +25,12 @@ export type TextDetails = {
     width: "narrow" | "wide" | "normal",
 }
 
-const DEFAULT_TEXT_DETAILS: TextDetails = {
+export type TMText = {
+    style: TextDetails,
+    text: string,
+}
+
+export const DEFAULT_TEXT_DETAILS: TextDetails = {
     color: "#fff",
     bold: false,
     italic: false,

@@ -1,28 +1,30 @@
 <script lang="ts">
 	import '$lib/style.css';
 	import Viewer from '$lib/viewer.svelte';
+	import Editor from '$lib/editor.svelte';
 	import { closest_color, hex_6_to_3 } from '$lib/format';
 	import { Bold, Italic } from 'lucide-svelte';
 
-	let tm_text = $state('$i$fff/$beeo$CFDnz$fff/$CFCf$CFDe$BEDo$BEEr');
-	let tm_editor: HTMLTextAreaElement | null = $state(null);
-	let tm_text_color = $state('#ffffff');
+	// 	let tm_text = $state('$i$fff/$beeo$CFDnz$fff/$CFCf$CFDe$BEDo$BEEr');
+	// 	let tm_editor: HTMLTextAreaElement | null = $state(null);
+	// 	let tm_text_color = $state('#ffffff');
 
-	function add_modifier(modifier: string) {
-		tm_text += modifier;
-		if (tm_editor) {
-			tm_editor.focus();
-		}
-	}
+	// 	function add_modifier(modifier: string) {
+	// 		tm_text += modifier;
+	// 		if (tm_editor) {
+	// 			tm_editor.focus();
+	// 		}
+	// 	}
 
-	function sanitize_color() {
-		tm_text_color = closest_color(tm_text_color);
-		console.log(tm_text_color);
-	}
+	// 	function sanitize_color() {
+	// 		tm_text_color = closest_color(tm_text_color);
+	// 		console.log(tm_text_color);
+	// 	}
+	//
 </script>
 
 <main>
-	<h3>Trackmania Formatting Tool</h3>
+	<!--	<h3>Trackmania Formatting Tool</h3>
 
 	<fieldset class="flex">
 		<button onclick={() => add_modifier('$w')}><span class="roboto wide">Wide</span></button>
@@ -55,7 +57,9 @@
 
 	<textarea bind:this={tm_editor} bind:value={tm_text}></textarea>
 	<br />
-	<Viewer {tm_text} />
+	<Viewer {tm_text} /> -->
+
+	<Editor />
 </main>
 
 <style>
