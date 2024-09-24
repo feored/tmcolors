@@ -27,6 +27,10 @@
 		tm_text_color = closest_color(tm_text_color);
 	}
 
+	function clear() {
+		tm_text = '';
+		history_add();
+	}
 	function undoable(): boolean {
 		return history_index != 0;
 	}
@@ -57,8 +61,6 @@
 		history_index++;
 		tm_text = history[history_index];
 	}
-
-	$inspect(history);
 </script>
 
 {#snippet format_guide(format_list: { name: string; code: string; description: string }[])}
@@ -97,18 +99,18 @@
 	<section>
 		<button onclick={() => (format_info_open = true)} class="success">Formatting Guide</button>
 	</section>
-	<fieldset class="flex">
-		<legend>Width modifiers</legend>
+	<details open>
+		<summary>Width Modifiers</summary>
 		<button onclick={() => add_modifier('$w')}><span class="roboto wide">Wide</span></button>
 		<button onclick={() => add_modifier('$n')}><span class="robot narrow">Narrow</span></button>
 		<button onclick={() => add_modifier('$m')} class="default">Reset</button>
-	</fieldset>
-	<fieldset class="flex">
-		<legend>Color modifiers</legend>
+	</details>
+	<details open>
+		<summary>Color Modifiers</summary>
 		<input
 			type="color"
-			style="width:3rem;height:3rem"
 			bind:value={tm_text_color}
+			class="inline block"
 			oninput={() => {
 				sanitize_color();
 			}}
@@ -117,9 +119,9 @@
 			>Insert Color</button
 		>
 		<button onclick={() => add_modifier('$g')} class="default">Reset Color</button>
-	</fieldset>
-	<fieldset class="flex">
-		<legend>Style modifiers</legend>
+	</details>
+	<details open>
+		<summary>Style Modifiers</summary>
 		<button onclick={() => add_modifier('$i')}><i>Italic</i></button>
 		<button onclick={() => add_modifier('$o')}><b>Bold</b></button>
 		<button onclick={() => add_modifier('$s')} style="text-shadow: 1px 1px 2px black;"
@@ -127,10 +129,14 @@
 		>
 		<button onclick={() => add_modifier('$t')}>UPPERCASE</button>
 		<button onclick={() => add_modifier('$z')} class="default">Reset All Styles</button>
-	</fieldset>
+	</details>
+	<details open>
+		<summary> Characters</summary>
+	</details>
 	<span class="flex">
 		<button disabled={!undoable()} onclick={() => undo()}><RotateCcw /></button>
 		<button disabled={!redoable()} onclick={() => redo()}><RotateCw /></button>
+		<button onclick={() => clear()}>Clear</button>
 	</span>
 	<textarea oninput={() => history_add()} bind:this={tm_editor} bind:value={tm_text}></textarea>
 	<br />
