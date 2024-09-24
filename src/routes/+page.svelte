@@ -3,24 +3,62 @@
 	import Viewer from '$lib/viewer.svelte';
 	import { formatting_data, formatting_unsupported } from '$lib/format_help';
 	import { closest_color, hex_6_to_3 } from '$lib/format';
-	import { Bold, Italic } from 'lucide-svelte';
+	import { RotateCcw, RotateCw } from 'lucide-svelte';
 
-	let tm_text = $state('$i$fff/$beeo$CFDnz$fff/$CFCf$CFDe$BEDo$BEEr');
+	const STARTING_TEXT = '$t Example: $t$i Italic $o Bold $f00 Red $w Wide $z Reset'; //$i$fff/$beeo$CFDnz$fff/$CFCf$CFDe$BEDo$BEEr';
+	let tm_text = $state(STARTING_TEXT);
 	let tm_editor: HTMLTextAreaElement | null = $state(null);
 	let tm_text_color = $state('#ffffff');
 
 	let format_info_open = $state(false);
+	let history: string[] = $state([STARTING_TEXT]);
+	let history_index: number = $state(0);
 
 	function add_modifier(modifier: string) {
-		tm_text += modifier;
-		if (tm_editor) {
-			tm_editor.focus();
-		}
+		if (!tm_editor) return;
+		tm_text =
+			tm_text.substring(0, tm_editor.selectionStart) +
+			modifier +
+			tm_text.substring(tm_editor.selectionStart);
+		history_add();
+		// tm_editor.focus();
 	}
 	function sanitize_color() {
 		tm_text_color = closest_color(tm_text_color);
-		console.log(tm_text_color);
 	}
+
+	function undoable(): boolean {
+		return history_index != 0;
+	}
+	function redoable(): boolean {
+		return history_index != history.length - 1;
+	}
+
+	function history_add() {
+		if (history_index != history.length - 1) {
+			history = history.slice(0, history_index + 1);
+		}
+		history.push(tm_text);
+		history_index = history.length - 1;
+	}
+
+	function undo() {
+		if (!undoable()) {
+			return;
+		}
+		history_index--;
+		tm_text = history[history_index];
+	}
+
+	function redo() {
+		if (!redoable()) {
+			return;
+		}
+		history_index++;
+		tm_text = history[history_index];
+	}
+
+	$inspect(history);
 </script>
 
 {#snippet format_guide(format_list: { name: string; code: string; description: string }[])}
@@ -76,21 +114,25 @@
 			}}
 		/>
 		<button onclick={() => add_modifier('$' + hex_6_to_3(tm_text_color).slice(1))}
-			>Apply Color</button
+			>Insert Color</button
 		>
 		<button onclick={() => add_modifier('$g')} class="default">Reset Color</button>
 	</fieldset>
 	<fieldset class="flex">
 		<legend>Style modifiers</legend>
 		<button onclick={() => add_modifier('$i')}><i>Italic</i></button>
-		<button onclick={() => add_modifier('$b')}><b>Bold</b></button>
+		<button onclick={() => add_modifier('$o')}><b>Bold</b></button>
 		<button onclick={() => add_modifier('$s')} style="text-shadow: 1px 1px 2px black;"
 			>Drop Shadow</button
 		>
+		<button onclick={() => add_modifier('$t')}>UPPERCASE</button>
 		<button onclick={() => add_modifier('$z')} class="default">Reset All Styles</button>
 	</fieldset>
-
-	<textarea bind:this={tm_editor} bind:value={tm_text}></textarea>
+	<span class="flex">
+		<button disabled={!undoable()} onclick={() => undo()}><RotateCcw /></button>
+		<button disabled={!redoable()} onclick={() => redo()}><RotateCw /></button>
+	</span>
+	<textarea oninput={() => history_add()} bind:this={tm_editor} bind:value={tm_text}></textarea>
 	<br />
 	<Viewer {tm_text} />
 </main>

@@ -7,6 +7,7 @@ enum Token {
     Shadow,
     Color,
     Invalid,
+    Uppercase,
     Dollar,
     ColorReset,
     WidthReset,
@@ -18,24 +19,26 @@ type TokenData = {
     value: string
 }
 
-export type TextDetails = {
+export type TMStyle = {
     color: string,
     bold: boolean,
     italic: boolean,
     shadow: boolean,
+    uppercase: boolean,
     width: "narrow" | "wide" | "normal",
 }
 
-const DEFAULT_TEXT_DETAILS: TextDetails = {
+const DEFAULT_TEXT_DETAILS: TMStyle = {
     color: "#fff",
     bold: false,
     italic: false,
     shadow: false,
+    uppercase: false,
     width: "normal",
 }
 
 const MODIFIER_SYMBOL = "$"
-const VALID_MODIFIERS = ["i", "o", "s", "w", "n", "g", "m", "z", "$"]
+const BASIC_MODIFIERS = ["i", "o", "s", "w", "n", "g", "m", "z", "t"]
 const HEXADECIMAL = "0123456789ABCDEF"
 
 function hex_to_rgb(hex: string) {
@@ -65,11 +68,9 @@ export function hex_6_to_3(hex: string): string {
 
 export function closest_color(hex: string): string {
     let rgb = hex_to_rgb(hex);
-    console.log(rgb);
     for (let i = 0; i < 3; i++) {
         rgb[i] = (Math.round(rgb[i] / 17) * 17);
     }
-    console.log(rgb);
     return rgb_to_hex(rgb[0], rgb[1], rgb[2]);
 }
 
@@ -92,24 +93,22 @@ function modifier_to_token(modifier: string): Token {
             return Token.WidthReset
         case "z":
             return Token.FullReset
+        case "t":
+            return Token.Uppercase
         default:
             return Token.Invalid
     }
 }
 
 function tokenize_next(input: string): TokenData {
-    console.log("Tokenizing " + input)
     if (input[0] != MODIFIER_SYMBOL) {
-        console.log("Returning character")
         return { type: Token.Character, value: input[0] }
     }
     else {
         if (input.length == 1) {
-            console.log("Length 1, returning invalid");
             return { type: Token.Invalid, value: input[0] }
         }
         if (input[1] == MODIFIER_SYMBOL) {
-            console.log("Spot 1 is $, returning character");
             return { type: Token.Dollar, value: MODIFIER_SYMBOL }
         }
     }
@@ -117,7 +116,7 @@ function tokenize_next(input: string): TokenData {
         return { type: Token.Color, value: input.slice(1, 4) }
     }
 
-    if (VALID_MODIFIERS.includes(input[1])) {
+    if (BASIC_MODIFIERS.includes(input[1])) {
         return { type: modifier_to_token(input[1]), value: "" }
     }
 
@@ -144,13 +143,12 @@ function tokenize(input: string): TokenData[] {
 }
 
 
-export function tm_to_html(input: string): { style: TextDetails, text: string }[] {
+export function tm_to_html(input: string): { style: TMStyle, text: string }[] {
     let tokens = tokenize(input);
-    console.log(tokens);
-    let output: { style: TextDetails, text: string }[] = [];
+    let output: { style: TMStyle, text: string }[] = [];
     let current_text_details = { ...DEFAULT_TEXT_DETAILS };
 
-    let is_same_style = (a: TextDetails, b: TextDetails): boolean => {
+    let is_same_style = (a: TMStyle, b: TMStyle): boolean => {
         return a.color == b.color && a.bold == b.bold && a.italic == b.italic && a.shadow == b.shadow && a.width == b.width
     };
 
@@ -167,10 +165,13 @@ export function tm_to_html(input: string): { style: TextDetails, text: string }[
 
         switch (token.type) {
             case Token.Bold:
-                current_text_details.bold = true;
+                current_text_details.bold = !current_text_details.bold;
                 break;
             case Token.Italic:
-                current_text_details.italic = true;
+                current_text_details.italic = !current_text_details.italic;
+                break;
+            case Token.Uppercase:
+                current_text_details.uppercase = !current_text_details.uppercase;
                 break;
             case Token.Shadow:
                 current_text_details.shadow = true;

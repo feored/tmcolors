@@ -1,11 +1,9 @@
 <script lang="ts">
 	import { tm_to_html } from '$lib/format';
 	import '$lib/style.css';
-	import type { TextDetails } from '$lib/format';
+	import type { TMStyle } from '$lib/format';
 	let bg_color = $state('#808080');
 	let { tm_text = '' }: { tm_text: string } = $props();
-
-	$inspect(bg_color);
 </script>
 
 <section>
@@ -16,6 +14,7 @@
 				style:font-weight={block.style.bold ? 'bold' : 'normal'}
 				style:font-style={block.style.italic ? 'italic' : 'normal'}
 				class={block.style.width}
+				style:text-transform={block.style.uppercase ? 'uppercase' : 'none'}
 				style:text-shadow={block.style.shadow ? '1px 1px 2px black' : 'none'}
 			>
 				{block.text}
@@ -28,10 +27,7 @@
 
 <style>
 	#result {
-		padding: 0.5rem;
-		display: flex;
-		align-items: center;
-		min-height: 4rem;
+		padding: 1rem;
 		border-radius: 6px;
 	}
 
