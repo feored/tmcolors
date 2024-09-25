@@ -44,7 +44,6 @@
 				}
 			}
 		}
-		console.log(gradient_data);
 		final_text = gradient_data.reduce((final_text, { color, character }) => {
 			if (!color) return final_text + character;
 			return final_text + `$${color}${character}`;
