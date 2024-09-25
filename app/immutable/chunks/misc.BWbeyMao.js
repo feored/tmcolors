@@ -1,0 +1,1 @@
+import{i as r,j as a}from"./runtime.BH8iLNxb.js";function l(t,e,n,i){r&&a(),e===void 0||e(t,n)}function d(t){var n;var e=(n=t.$$slots)==null?void 0:n.default;return e===!0?t.children:e}export{d,l as s};
