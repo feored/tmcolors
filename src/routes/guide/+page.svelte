@@ -20,8 +20,8 @@
 {/snippet}
 
 <menu>
-	<li><a href="../">Editor</a></li>
-	<li><a href="../gradient">Gradient</a></li>
+	<li><a href="./">Editor</a></li>
+	<li><a href="./gradient">Gradient</a></li>
 	<li class="selected"><a href="#">Guide</a></li>
 </menu>
 <header>

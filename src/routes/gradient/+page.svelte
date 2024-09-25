@@ -3,9 +3,9 @@
 </script>
 
 <menu>
-	<li><a href="../">Editor</a></li>
+	<li><a href="./">Editor</a></li>
 	<li class="selected"><a href="#">Gradient</a></li>
-	<li><a href="../guide">Guide</a></li>
+	<li><a href="./guide">Guide</a></li>
 </menu>
 
 <section>
