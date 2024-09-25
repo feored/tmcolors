@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { tm_to_html } from '$lib/format';
-	import '$lib/style.css';
-	import type { TMStyle } from '$lib/format';
 	let bg_color = $state('#000000');
 	let { tm_text = '' }: { tm_text: string } = $props();
 </script>

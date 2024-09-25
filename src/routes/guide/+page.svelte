@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { formatting_data, formatting_unsupported } from '$lib/format_help';
-	import Viewer from '$lib/viewer.svelte';
+	import Viewer from '$lib/components/viewer.svelte';
 </script>
 
 {#snippet format_guide(
@@ -19,6 +19,11 @@
 	{/each}
 {/snippet}
 
+<menu>
+	<li><a href="../">Editor</a></li>
+	<li><a href="../gradient">Gradient</a></li>
+	<li class="selected"><a href="#">Guide</a></li>
+</menu>
 <header>
 	<h2>Formatting Guide</h2>
 	<p class="muted">Tested in TM², details may vary in other versions of Trackmania.</p>

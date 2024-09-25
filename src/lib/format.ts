@@ -170,7 +170,7 @@ export function tm_to_html(input: string): { style: TMStyle, text: string }[] {
     let current_text_details = { ...DEFAULT_TEXT_DETAILS };
 
     let is_same_style = (a: TMStyle, b: TMStyle): boolean => {
-        return a.color == b.color && a.bold == b.bold && a.italic == b.italic && a.shadow == b.shadow && a.width == b.width
+        return a.color == b.color && a.bold == b.bold && a.italic == b.italic && a.shadow == b.shadow && a.width == b.width && a.uppercase == b.uppercase;
     };
 
     for (const token of tokens) {
@@ -218,5 +218,6 @@ export function tm_to_html(input: string): { style: TMStyle, text: string }[] {
         }
 
     }
+    console.log(output);
     return output;
 }

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Viewer from '$lib/viewer.svelte';
+	import Viewer from '$lib/components/viewer.svelte';
 	let tm_text = 'Hello, World!';
 </script>
 

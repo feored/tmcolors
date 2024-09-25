@@ -1,5 +1,5 @@
 <script>
-	import '$lib/style.css';
+	import '$lib/css/style.css';
 	import { version } from '$app/environment';
 </script>
 
