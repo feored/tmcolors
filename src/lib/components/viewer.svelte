@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { tm_to_html } from '$lib/format';
+	import { text_to_tm, type TMData } from '$lib/format';
 	let bg_color = $state('#000000');
-	let { tm_text = '' }: { tm_text: string } = $props();
+	let { tm_text = '', tm_data = [] }: { tm_text?: string; tm_data?: TMData[] } = $props();
 </script>
 
 <section>
 	<div class="flex row align-center" style="gap:1rem;">
 		<div id="result" style:background-color={bg_color} class="grow">
-			{#each tm_to_html(tm_text) as block}
+			{#each tm_data.length == 0 ? text_to_tm(tm_text) : tm_data as block}
 				<span
 					style:color={block.style.color}
 					style:font-weight={block.style.bold ? 'bold' : 'normal'}

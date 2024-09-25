@@ -12,8 +12,12 @@
 			<summary>{format_info.name} <code class="large">[{format_info.code}]</code></summary>
 			<p>{@html format_info.description}</p>
 			{#if format_info.example}
-				<p><code class="large">{@html format_info.example}</code></p>
-				<Viewer tm_text={format_info.example} />
+				<div class="flex" style="gap:1rem;">
+					<code class="shrink">{@html format_info.example}</code>
+					<div class="grow">
+						<Viewer tm_text={format_info.example} />
+					</div>
+				</div>
 			{/if}
 		</details>
 	{/each}
@@ -37,3 +41,12 @@
 	</p>
 	{@render format_guide(formatting_unsupported)}
 </section>
+
+<style>
+	code {
+		padding: 1rem;
+		height: 100%;
+		font-size: x-large;
+		display: inline-block;
+	}
+</style>

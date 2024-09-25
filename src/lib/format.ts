@@ -29,7 +29,7 @@ export type TMStyle = {
     width: "narrow" | "wide" | "normal",
 }
 
-const DEFAULT_TEXT_DETAILS: TMStyle = {
+const DEFAULT_STYLE: TMStyle = {
     color: "#fff",
     bold: false,
     italic: false,
@@ -38,9 +38,19 @@ const DEFAULT_TEXT_DETAILS: TMStyle = {
     width: "normal",
 }
 
+export type TMData = {
+    style: TMStyle,
+    text: string
+}
+
 const MODIFIER_SYMBOL = "$"
 const BASIC_MODIFIERS = ["i", "o", "s", "w", "n", "g", "m", "z", "t"]
 const HEXADECIMAL = "0123456789ABCDEF"
+const DEFAULT_COLOR = "#fff";
+
+function is_same_style(a: TMStyle, b: TMStyle): boolean {
+    return a.color == b.color && a.bold == b.bold && a.italic == b.italic && a.shadow == b.shadow && a.width == b.width && a.uppercase == b.uppercase;
+};
 
 export function hex_to_rgb(hex: string) {
     if (hex[0] == "#") {
@@ -163,24 +173,246 @@ function tokenize(input: string): TokenData[] {
     return output;
 }
 
+function gradient(start_color: number[], end_color: number[], ratio: number): number[] {
+    var differences = end_color.map((c, i) => c - start_color[i]);
+    return start_color.map((c, i) => c + differences[i] * ratio);
+}
 
-export function tm_to_html(input: string): { style: TMStyle, text: string }[] {
-    let tokens = tokenize(input);
-    let output: { style: TMStyle, text: string }[] = [];
-    let current_text_details = { ...DEFAULT_TEXT_DETAILS };
+export function text_gradient(input: string, colors: string[], spaces_count = false): TMData[] {
+    let base: TMData[] = text_to_tm(input, false);
 
-    let is_same_style = (a: TMStyle, b: TMStyle): boolean => {
-        return a.color == b.color && a.bold == b.bold && a.italic == b.italic && a.shadow == b.shadow && a.width == b.width && a.uppercase == b.uppercase;
-    };
+    let input_tm: TMData[] = base;
+
+    if (!spaces_count) {
+        input_tm = input_tm.filter((element) => !is_whitespace(element.text));
+    }
+
+    let input_colors = [...colors];
+    if (input_tm.length < colors.length) {
+        input_colors = input_colors.slice(0, input_tm.length);
+    }
+
+    let gradients_num = input_colors.length - 1;
+    let char_per_color_set = Math.floor(input_tm.length / gradients_num);
+
+    let output: TMData[] = [...input_tm];
+
+    for (let i = 0; i < input_tm.length; i++) {
+        var start_color = input_colors[Math.min(Math.floor(i / char_per_color_set), gradients_num)];
+        var end_color = input_colors[Math.min(Math.floor(i / char_per_color_set) + 1, gradients_num)];
+        var ratio = Math.min(1, (i % char_per_color_set) / char_per_color_set);
+        let rgb = gradient(hex_to_rgb(start_color), hex_to_rgb(end_color), ratio);
+        let hex = rgb_to_hex_3(rgb[0], rgb[1], rgb[2]).slice(1);
+        output[i].style.color = "#" + hex;
+    }
+
+    if (!spaces_count) {
+        for (let i = 0; i < base.length; i++) {
+            if (is_whitespace(base[i].text)) {
+                output.splice(i, 0, { style: i > 0 ? { ...base[i - 1].style } : { ...DEFAULT_STYLE }, text: base[i].text });
+            }
+        }
+    }
+
+    return compress_tmdata(output);
+}
+
+function is_whitespace(input: string): boolean {
+    return input != "" && input.trim() == '';
+}
+
+export function tmdata_to_text(input: TMData[]): string {
+    console.log("STARTING TMDATA TO TEXT");
+    // try to always pass compressed tmdata or the resulting 
+    // string will be enormous
+    let output_tokens: TokenData[] = [];
+    let current_text_details = { ...DEFAULT_STYLE };
+    for (let i = 0; i < input.length; i++) {
+
+        if (!is_same_style(current_text_details, DEFAULT_STYLE) && is_same_style(input[i].style, DEFAULT_STYLE)) {
+            // reset  all
+            output_tokens.push({
+                type: Token.FullReset,
+                value: "",
+                skip: 0
+            })
+            current_text_details = { ...DEFAULT_STYLE }
+        } else {
+
+            // Color change
+            if (input[i].style.color != current_text_details.color) {
+                if (input[i].style.color != DEFAULT_COLOR) {
+                    output_tokens.push({
+                        type: Token.Color,
+                        value: input[i].style.color,
+                        skip: 0
+                    })
+                } else {
+                    output_tokens.push({
+                        type: Token.ColorReset,
+                        value: "",
+                        skip: 0
+                    })
+                }
+                current_text_details.color = input[i].style.color;
+            }
+
+            // Width change
+            if (input[i].style.width != current_text_details.width) {
+                switch (input[i].style.width) {
+                    case "narrow":
+                        output_tokens.push({
+                            type: Token.Narrow,
+                            value: "",
+                            skip: 0
+                        })
+                        break;
+                    case "wide":
+                        output_tokens.push({
+                            type: Token.Wide,
+                            value: "",
+                            skip: 0
+                        })
+                        break;
+                    case "normal":
+                        output_tokens.push({
+                            type: Token.WidthReset,
+                            value: "",
+                            skip: 0
+                        })
+                        break;
+                }
+                current_text_details.width = input[i].style.width;
+            }
+
+            // Bold change
+            if (input[i].style.bold != current_text_details.bold) {
+                output_tokens.push({
+                    type: Token.Bold,
+                    value: "",
+                    skip: 0
+                })
+                current_text_details.bold = input[i].style.bold;
+            }
+
+            //Italic change
+            if (input[i].style.italic != current_text_details.italic) {
+                output_tokens.push({
+                    type: Token.Italic,
+                    value: "",
+                    skip: 0
+                })
+                current_text_details.italic = input[i].style.italic;
+            }
+
+            //Shadow change
+            if (input[i].style.shadow != current_text_details.shadow) {
+                output_tokens.push({
+                    type: Token.Shadow,
+                    value: "",
+                    skip: 0
+                })
+                current_text_details.shadow = input[i].style.shadow;
+            }
+
+        }
+
+
+        // add text
+        for (let j = 0; j < input[i].text.length; j++) {
+            if (input[i].text[j] == MODIFIER_SYMBOL) {
+                output_tokens.push({
+                    type: Token.Dollar,
+                    value: MODIFIER_SYMBOL,
+                    skip: 0
+                });
+            } else {
+                output_tokens.push({
+                    type: Token.Character,
+                    value: input[i].text[j],
+                    skip: 0
+                });
+            }
+
+        }
+
+    }
+    let output = tokens_to_text(output_tokens);
+    return output;
+}
+
+function tokens_to_text(tokens: TokenData[]): string {
+    let output = "";
+    for (let token of tokens) {
+        switch (token.type) {
+            case Token.Character:
+                output += token.value;
+                break;
+            case Token.Dollar:
+                output += "$$";
+                break;
+            case Token.Color:
+                output += "$" + token.value.slice(1);
+                break;
+            case Token.Bold:
+                output += "$o";
+                break;
+            case Token.Italic:
+                output += "$i";
+                break;
+            case Token.ColorReset:
+                output += "$g"
+                break;
+            case Token.FullReset:
+                output += "$z";
+                break;
+            case Token.Narrow:
+                output += "$n";
+                break;
+            case Token.Shadow:
+                output += "$s";
+                break;
+            case Token.Uppercase:
+                output += "$t";
+                break;
+            case Token.Wide:
+                output += "$w";
+                break;
+            case Token.WidthReset:
+                output += "$m";
+                break;
+            case Token.Invalid:
+                break;
+        }
+    }
+    return output;
+}
+
+function compress_tmdata(input: TMData[]): TMData[] {
+
+    for (let i = input.length - 1; i > 0; i--) {
+        if (is_same_style(input[i].style, input[i - 1].style)) {
+            input[i - 1].text += input[i].text;
+            input[i].text = "";
+        }
+    }
+
+
+    let output = input.filter((tm_data) => tm_data.text.length > 0);
+
+    return output;
+}
+
+function tokens_to_tm(tokens: TokenData[], compress = true): TMData[] {
+    let output: TMData[] = [];
+    let current_text_details = { ...DEFAULT_STYLE };
+
+
 
     for (const token of tokens) {
-
         if (token.type == Token.Character || token.type == Token.Dollar) {
-            if (output.length == 0 || !is_same_style(output[output.length - 1].style, current_text_details)) {
-                output.push({ style: { ...current_text_details }, text: token.value });
-            } else {
-                output[output.length - 1].text += token.value;
-            }
+            output.push({ style: { ...current_text_details }, text: token.value });
+
             continue;
         }
 
@@ -207,16 +439,23 @@ export function tm_to_html(input: string): { style: TMStyle, text: string }[] {
                 current_text_details.color = "#" + token.value;
                 break;
             case Token.ColorReset:
-                current_text_details.color = DEFAULT_TEXT_DETAILS.color;
+                current_text_details.color = DEFAULT_STYLE.color;
                 break;
             case Token.WidthReset:
-                current_text_details.width = DEFAULT_TEXT_DETAILS.width;
+                current_text_details.width = DEFAULT_STYLE.width;
                 break;
             case Token.FullReset:
-                current_text_details = { ...DEFAULT_TEXT_DETAILS };
+                current_text_details = { ...DEFAULT_STYLE };
                 break;
         }
 
     }
+    if (compress) {
+        return (compress_tmdata(output));
+    }
     return output;
+}
+export function text_to_tm(input: string, compress = true): TMData[] {
+    let tokens = tokenize(input);
+    return tokens_to_tm(tokens, compress);
 }
