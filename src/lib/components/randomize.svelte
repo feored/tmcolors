@@ -14,7 +14,7 @@
 	});
 
 	function random_color() {
-		let random_channel = () => Math.floor(Math.random() * 17).toString(16);
+		let random_channel = () => Math.floor(Math.random() * 16).toString(16);
 		return `${random_channel()}${random_channel()}${random_channel()}`;
 	}
 
@@ -51,7 +51,7 @@
 	let output_text: string = $derived(tmdata_to_text(tm_data));
 </script>
 
-<article class="flex row">
+<article class="flex row wrap">
 	<label><input type="checkbox" bind:checked={settings.color} />Color</label>
 	<label><input type="checkbox" bind:checked={settings.width} />Width</label>
 	<label><input type="checkbox" bind:checked={settings.uppercase} />Uppercase</label>
@@ -77,6 +77,9 @@
 </article>
 
 <style>
+	article label {
+		width: auto;
+	}
 	textarea {
 		font-family: monospace;
 	}

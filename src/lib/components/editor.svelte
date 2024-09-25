@@ -110,7 +110,7 @@
 		</div>
 	</details>
 	<article style="margin:0px;">
-		<span class="flex">
+		<span class="flex align-center">
 			<button disabled={!undoable()} onclick={() => undo()}><RotateCcw /></button>
 			<button disabled={!redoable()} onclick={() => redo()}><RotateCw /></button>
 			<button onclick={() => clear()}>Clear</button>

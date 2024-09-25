@@ -19,6 +19,7 @@ type TokenData = {
     value: string,
     skip: number
 }
+// color in TokenData is hex without #
 
 export type TMStyle = {
     color: string,
@@ -29,6 +30,7 @@ export type TMStyle = {
     width: "narrow" | "wide" | "normal",
 }
 
+// color in TMstyle is #hex
 const DEFAULT_STYLE: TMStyle = {
     color: "#fff",
     bold: false,
@@ -242,9 +244,11 @@ export function tmdata_to_text(input: TMData[]): string {
             // Color change
             if (input[i].style.color != current_text_details.color) {
                 if (input[i].style.color != DEFAULT_COLOR) {
+                    console.log("CHANGE IN COLOR, ORIGINAL:")
+                    console.log(input[i].style.color);
                     output_tokens.push({
                         type: Token.Color,
-                        value: input[i].style.color,
+                        value: input[i].style.color.slice(1, 4),
                         skip: 0
                     })
                 } else {
@@ -283,6 +287,16 @@ export function tmdata_to_text(input: TMData[]): string {
                         break;
                 }
                 current_text_details.width = input[i].style.width;
+            }
+
+            //Uppercase change
+            if (input[i].style.uppercase != current_text_details.uppercase) {
+                output_tokens.push({
+                    type: Token.Uppercase,
+                    value: "",
+                    skip: 0
+                })
+                current_text_details.uppercase = input[i].style.uppercase;
             }
 
             // Bold change
@@ -337,6 +351,7 @@ export function tmdata_to_text(input: TMData[]): string {
         }
 
     }
+    console.log(output_tokens);
     let output = tokens_to_text(output_tokens);
     return output;
 }
@@ -352,7 +367,7 @@ function tokens_to_text(tokens: TokenData[]): string {
                 output += "$$";
                 break;
             case Token.Color:
-                output += "$" + token.value.slice(1);
+                output += "$" + token.value;
                 break;
             case Token.Bold:
                 output += "$o";

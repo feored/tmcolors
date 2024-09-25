@@ -34,10 +34,12 @@
 		<header>Text</header>
 		<textarea id="gradient_text" bind:value={gradient_text}></textarea>
 		<br />
-		<label>
-			<input type="checkbox" bind:checked={spaces_count} />
-			Take spaces into account</label
-		>
+		<div class="flex" style="gap:1rem">
+			<label>
+				<input type="checkbox" bind:checked={spaces_count} />
+				Take spaces into account</label
+			>
+		</div>
 	</article>
 	<article>
 		<header>Colors</header>
