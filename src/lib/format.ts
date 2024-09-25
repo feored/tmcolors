@@ -42,7 +42,7 @@ const MODIFIER_SYMBOL = "$"
 const BASIC_MODIFIERS = ["i", "o", "s", "w", "n", "g", "m", "z", "t"]
 const HEXADECIMAL = "0123456789ABCDEF"
 
-function hex_to_rgb(hex: string) {
+export function hex_to_rgb(hex: string) {
     if (hex[0] == "#") {
         hex = hex.slice(1);
     }
@@ -58,7 +58,7 @@ function rgb_to_hex(r: number, g: number, b: number) {
     return "#" + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1);
 }
 
-function rgb_to_hex_3(r: number, g: number, b: number) {
+export function rgb_to_hex_3(r: number, g: number, b: number) {
     return "#" + [r, g, b].map((x) => Math.round(x / 17).toString(16)).join('');
 }
 
@@ -218,6 +218,5 @@ export function tm_to_html(input: string): { style: TMStyle, text: string }[] {
         }
 
     }
-    console.log(output);
     return output;
 }

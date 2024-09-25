@@ -26,9 +26,6 @@
 			tm_text.substring(tm_editor.selectionStart);
 		history_add();
 	}
-	function sanitize_color() {
-		tm_text_color = closest_color(tm_text_color);
-	}
 
 	function clear() {
 		tm_text = '';
@@ -80,7 +77,7 @@
 			bind:value={tm_text_color}
 			class="inline block"
 			oninput={() => {
-				sanitize_color();
+				tm_text_color = closest_color(tm_text_color);
 			}}
 		/>
 		<button onclick={() => add_modifier('$' + hex_6_to_3(tm_text_color).slice(1))}
@@ -116,6 +113,7 @@
 		<button disabled={!undoable()} onclick={() => undo()}><RotateCcw /></button>
 		<button disabled={!redoable()} onclick={() => redo()}><RotateCw /></button>
 		<button onclick={() => clear()}>Clear</button>
+		<button onclick={() => navigator.clipboard.writeText(tm_text)}>Copy to clipboard</button>
 	</span>
 	<textarea oninput={() => history_add()} bind:this={tm_editor} bind:value={tm_text}></textarea>
 	<br />
