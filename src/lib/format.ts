@@ -388,7 +388,7 @@ function tokens_to_text(tokens: TokenData[]): string {
     return output;
 }
 
-function compress_tmdata(input: TMData[]): TMData[] {
+export function compress_tmdata(input: TMData[]): TMData[] {
 
     for (let i = input.length - 1; i > 0; i--) {
         if (is_same_style(input[i].style, input[i - 1].style)) {
