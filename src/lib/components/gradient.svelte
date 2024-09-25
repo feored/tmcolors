@@ -74,7 +74,11 @@
 							gradient_colors[i] = closest_color(gradient_colors[i]);
 						}}
 					/>
-					<button class="iconbtn" onclick={() => gradient_colors.splice(i, 1)}>
+					<button
+						class="iconbtn"
+						onclick={() => gradient_colors.splice(i, 1)}
+						disabled={gradient_colors.length < 2}
+					>
 						<X />
 					</button>
 				</div>
