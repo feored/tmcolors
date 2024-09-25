@@ -16,6 +16,20 @@
 		return start_color.map((c, i) => c + differences[i] * ratio);
 	}
 
+	function gradient_data_to_text(gradient_data: { color?: string; character: string }[]): string {
+		let final_text = '';
+		let last_color = '';
+		for (let i = 0; i < gradient_data.length; i++) {
+			if (gradient_data[i].color && gradient_data[i].color != last_color) {
+				final_text += `$${gradient_data[i].color}${gradient_data[i].character}`;
+				last_color = gradient_data[i].color!;
+			} else {
+				final_text += gradient_data[i].character;
+			}
+		}
+		return final_text;
+	}
+
 	let tm_text = $derived.by(() => {
 		let final_text = '';
 
@@ -44,10 +58,7 @@
 				}
 			}
 		}
-		final_text = gradient_data.reduce((final_text, { color, character }) => {
-			if (!color) return final_text + character;
-			return final_text + `$${color}${character}`;
-		}, '');
+		final_text = gradient_data_to_text(gradient_data);
 		return final_text;
 	});
 </script>
