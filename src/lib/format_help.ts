@@ -43,7 +43,7 @@ export const formatting_data = [
         code: '$s',
         name: 'Shadow',
         description: 'All following text will have a shadow. <br />Reset by using Reset All Styles. <br />Note: The shadow is not visible in TM2 as far as I can tell.',
-        example: "$s Example1 $s Example2"
+        example: "$s Example1 $z Example2"
     },
     {
         code: '$hex',

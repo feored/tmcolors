@@ -109,15 +109,17 @@
 			</div>
 		</div>
 	</details>
-	<span class="flex">
-		<button disabled={!undoable()} onclick={() => undo()}><RotateCcw /></button>
-		<button disabled={!redoable()} onclick={() => redo()}><RotateCw /></button>
-		<button onclick={() => clear()}>Clear</button>
-		<button onclick={() => navigator.clipboard.writeText(tm_text)}>Copy to clipboard</button>
-	</span>
-	<textarea oninput={() => history_add()} bind:this={tm_editor} bind:value={tm_text}></textarea>
-	<br />
-	<Viewer {tm_text} />
+	<article style="margin:0px;">
+		<span class="flex">
+			<button disabled={!undoable()} onclick={() => undo()}><RotateCcw /></button>
+			<button disabled={!redoable()} onclick={() => redo()}><RotateCw /></button>
+			<button onclick={() => clear()}>Clear</button>
+			<button onclick={() => navigator.clipboard.writeText(tm_text)}>Copy to clipboard</button>
+		</span>
+		<textarea oninput={() => history_add()} bind:this={tm_editor} bind:value={tm_text}></textarea>
+		<br />
+		<Viewer {tm_text} />
+	</article>
 </section>
 
 <style>
