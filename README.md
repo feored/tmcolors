@@ -6,6 +6,11 @@ https://feored.github.io/tmformat
 
 ### changelog
 
+
+0.4.0
+- Added support for icons
+
+
 0.3.0
 - Gradient input now supports TM formatted text (but will ignore color)
 - Gradient checks for most whitespace characters using `.trim()`

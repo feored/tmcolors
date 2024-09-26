@@ -41,6 +41,11 @@
 		tool for the sake of simplicity.
 	</p>
 	{@render format_guide(formatting_unsupported)}
+	<p>
+		Credit to <a href="https://wiki.trackmania.io/en/content-creation/text-styling"
+			>Trackmania Wiki</a
+		> for the FA icons list.
+	</p>
 </section>
 
 <style>

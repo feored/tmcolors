@@ -1,9 +1,12 @@
 <script lang="ts">
 	import Viewer from '$lib/components/viewer.svelte';
+	import { ICONS } from '$lib/icons';
 	import { closest_color, hex_6_to_3 } from '$lib/format';
 	import { RotateCcw, RotateCw } from 'lucide-svelte';
+	import '@fortawesome/fontawesome-free/css/all.min.css';
 
-	const STARTING_TEXT = '$t Example: $t$i Italic $o Bold $f00 Red $w Wide $z Reset $0d0 [tmformat]';
+	const STARTING_TEXT =
+		'$t Example: $t$i Italic $o Bold $f00 Red $w Wide $z Reset $0d0 [tmformat] ';
 
 	let tm_text = $state(STARTING_TEXT);
 	let tm_editor: HTMLTextAreaElement | null = $state(null);
@@ -17,6 +20,12 @@
 		diacritics.push(String.fromCodePoint(i));
 	}
 	let selected_diacritic = $state(diacritics[0]);
+	let selected_icon = $state(ICONS[0]);
+
+	let open_dialogs = $state({
+		icons: false,
+		diacritics: false
+	});
 
 	function add_modifier(modifier: string) {
 		if (!tm_editor) return;
@@ -64,6 +73,30 @@
 </script>
 
 <section>
+	<dialog open={open_dialogs.icons}>
+		<header>Add Icon</header>
+		<main class="overflow-y" style="height:20rem;">
+			<div class="flex wrap" style="gap:1rem;">
+				{#each ICONS as icon}
+					<button class="tm-icon" style="width:4rem;" onclick={() => add_modifier(icon)}
+						>{icon}</button
+					>
+				{/each}
+			</div>
+		</main>
+		<footer><button onclick={() => (open_dialogs.icons = false)}>Close</button></footer>
+	</dialog>
+	<dialog open={open_dialogs.diacritics}>
+		<header>Add Diacritics</header>
+		<main class="overflow-y" style="height:20rem;">
+			<div class="flex wrap" style="gap:1rem;">
+				{#each diacritics as diacritic}
+					<button style="width:4rem;" onclick={() => add_modifier(diacritic)}>{diacritic}</button>
+				{/each}
+			</div>
+		</main>
+		<footer><button onclick={() => (open_dialogs.diacritics = false)}>Close</button></footer>
+	</dialog>
 	<details open>
 		<summary>Width Modifiers</summary>
 		<button onclick={() => add_modifier('$w')}><span class="roboto wide">Wide</span></button>
@@ -97,16 +130,10 @@
 	</details>
 	<details>
 		<summary> Characters</summary>
-		<div class="flex" style="gap:1rem;">
-			<button onclick={() => add_modifier('$$')}>$</button>
-			<div class="inline block">
-				<select bind:value={selected_diacritic} class="inline" style="width:fit-content;">
-					{#each diacritics as diacritic}
-						<option value={diacritic}>{diacritic}</option>
-					{/each}
-				</select>
-				<button onclick={() => add_modifier(selected_diacritic)}>Insert Diacritic</button>
-			</div>
+		<div>
+			<button onclick={() => add_modifier('$$')}>Insert $</button>
+			<button onclick={() => (open_dialogs.diacritics = true)}>Insert Diacritic</button>
+			<button onclick={() => (open_dialogs.icons = true)}>Insert Icon</button>
 		</div>
 	</details>
 	<article style="margin:0px;">

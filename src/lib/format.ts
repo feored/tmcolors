@@ -1,3 +1,5 @@
+import { ICONS } from './icons';
+
 enum Token {
     Character,
     Bold,
@@ -64,6 +66,10 @@ export function hex_to_rgb(hex: string) {
     var b = bigint & 255;
 
     return [r, g, b];
+}
+
+export function is_icon(input: string): boolean {
+    return ICONS.includes(input);
 }
 
 function rgb_to_hex(r: number, g: number, b: number) {
@@ -224,7 +230,6 @@ function is_whitespace(input: string): boolean {
 }
 
 export function tmdata_to_text(input: TMData[]): string {
-    console.log("STARTING TMDATA TO TEXT");
     // try to always pass compressed tmdata or the resulting 
     // string will be enormous
     let output_tokens: TokenData[] = [];
@@ -244,8 +249,6 @@ export function tmdata_to_text(input: TMData[]): string {
             // Color change
             if (input[i].style.color != current_text_details.color) {
                 if (input[i].style.color != DEFAULT_COLOR) {
-                    console.log("CHANGE IN COLOR, ORIGINAL:")
-                    console.log(input[i].style.color);
                     output_tokens.push({
                         type: Token.Color,
                         value: input[i].style.color.slice(1, 4),
@@ -351,7 +354,6 @@ export function tmdata_to_text(input: TMData[]): string {
         }
 
     }
-    console.log(output_tokens);
     let output = tokens_to_text(output_tokens);
     return output;
 }
@@ -406,12 +408,12 @@ function tokens_to_text(tokens: TokenData[]): string {
 export function compress_tmdata(input: TMData[]): TMData[] {
 
     for (let i = input.length - 1; i > 0; i--) {
-        if (is_same_style(input[i].style, input[i - 1].style)) {
+        // split icons so that we can apply different font-family
+        if (is_same_style(input[i].style, input[i - 1].style) && !is_icon(input[i].text) && !is_icon(input[i - 1].text)) {
             input[i - 1].text += input[i].text;
             input[i].text = "";
         }
     }
-
 
     let output = input.filter((tm_data) => tm_data.text.length > 0);
 
