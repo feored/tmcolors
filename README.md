@@ -7,6 +7,10 @@ https://feored.github.io/tmformat
 ### changelog
 
 
+0.4.1
+- Reverted to gray for default viewer background
+- Fixed shadow handling
+
 0.4.0
 - Added support for icons
 

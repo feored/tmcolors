@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { text_to_tm, type TMData, is_icon } from '$lib/format';
-	let bg_color = $state('#000000');
+	let bg_color = $state('#808080');
 	let { tm_text = '', tm_data = [] }: { tm_text?: string; tm_data?: TMData[] } = $props();
 </script>
 

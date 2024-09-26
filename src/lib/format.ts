@@ -444,7 +444,7 @@ function tokens_to_tm(tokens: TokenData[], compress = true): TMData[] {
                 current_text_details.uppercase = !current_text_details.uppercase;
                 break;
             case Token.Shadow:
-                current_text_details.shadow = true;
+                current_text_details.shadow = !current_text_details.shadow;
                 break;
             case Token.Wide:
                 current_text_details.width = "wide";
