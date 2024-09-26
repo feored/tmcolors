@@ -3,9 +3,9 @@
 	import { text_gradient, closest_color, tmdata_to_text } from '$lib/format';
 	import { X, Plus } from 'lucide-svelte';
 
-	const INITIAL_TEXT = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit';
+	const INITIAL_TEXT = '$sLorem ipsum dolor sit amet, consectetur adipiscing elit';
 	const DEFAULT_COLOR = '#ffffff';
-	const INITIAL_COLORS = ['#ff0000', '#00ff00', '#0000ff'];
+	const INITIAL_COLORS = ['#ff8080', '#80ff80', '#8080ff'];
 
 	let gradient_text = $state(INITIAL_TEXT);
 	let gradient_colors = $state(INITIAL_COLORS);
